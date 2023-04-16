@@ -103,35 +103,21 @@ Cypress.Commands.add('buyNow', () =>{
 Cypress.Commands.add('auction', () =>{
     cy.xpath("//div[text()=' Aukce ']").should("be.visible")
     // Get the number form string (actual price)
-    //cy.get("auk-item-detail-main-item-panel-price span[class*='bold']").text()
-    // cy.get("auk-item-detail-main-item-panel-price span[class*='bold']")
-    // .should('match', /\d+/)
-    // .invoke('match', /(?<id>^[^,]+)/).its('group.id').as('itemId')
-    // cy.log('printing the id').then(function(){
-    // cy.log(`item id is: ${htis.itemId}`)
-    // })
-    // cy.get('@itemId').then(Number)
+    cy.get("auk-item-detail-main-item-panel-price span[class*='bold']").then(($priceHolder) => {
+        const price = $priceHolder.text().match(/[0-9 ]+/)[0].replace(/\s+/g, '').trim()
+        cy.log(price)
 
-    // cy.get("auk-item-detail-main-item-panel-price span[class*='bold']").then(text => {
-    //     var pattern = /^[^,]+/g
-    //     var number = text.match(pattern)
-    //     console.log(number)
-    //     // Count actual price + 20%
-    //     var perc = (number * 20 / 100) + number
+        // Calculate and increase auction price up to 20%
+        const betAmount = Math.round(price * 1.2)
+        cy.log(betAmount)
 
-    //     // Input and add auction
-    // cy.get("auk-item-detail-main-item-panel input").click()
-    // cy.get("auk-item-detail-main-item-panel input").type(`${perc}`)
-    // cy.xpath("//div[text()='Přihodit']//ancestor::button").should('not.be.disabled', {timeout: 10000})
-    // cy.xpath("//div[text()='Přihodit']").click()
-    // cy.get("[class*='dialog-container']").should("be.visible", {timeout: 10000})
-    // })
-    // Count actual price + 20%
-    //var perc = (number * 20 / 100) + number
-    // Input and add auction
-    // cy.get("auk-item-detail-main-item-panel input").click()
-    // cy.get("auk-item-detail-main-item-panel input").type(`${perc}`)
-    // cy.xpath("//div[text()='Přihodit']//ancestor::button").should('not.be.disabled', {timeout: 10000})
+        // Input and add auction
+        cy.get("auk-item-detail-main-item-panel input").click()
+        cy.get("auk-item-detail-main-item-panel input").type(betAmount)
+    })
+
+    // Click on add button and verify login dialog is open
+    cy.xpath("//div[text()='Přihodit']//ancestor::button").should('not.be.disabled', {timeout: 10000})
     cy.xpath("//div[text()='Přihodit']").click()
     cy.get("[class*='dialog-container']").should("be.visible", {timeout: 10000})
 })
